@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
 
@@ -7,6 +8,8 @@ namespace Menu
 {
     public class MainMenu : MonoBehaviour
     {
+        public NetworkManager mainManager;
+        
         public GameObject mainPanel;
         public GameObject connectPanel;
         public GameObject optionPanel;
@@ -29,7 +32,7 @@ namespace Menu
 
         public void HostGame()
         {
-            
+            mainManager.StartHost();
         }
 
         public void OptionGame()

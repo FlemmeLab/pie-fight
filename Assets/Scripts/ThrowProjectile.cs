@@ -5,7 +5,8 @@ using UnityEngine;
 public class ThrowProjectile : MonoBehaviour
 {
     
-    public Rigidbody bullet; 
+    public GameObject projectile; 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,8 +17,9 @@ public class ThrowProjectile : MonoBehaviour
     void Update()
     {
          if(Input.GetMouseButtonDown(0)){
-            Rigidbody projectile = Instantiate(bullet, transform.position, transform.rotation) ;
-            projectile.velocity = transform.TransformDirection(Vector3.forward * 10);
+            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation) ;
+            projectileInstance.SetActive(true) ; 
+            projectileInstance.GetComponent<Rigidbody>().AddForce(Vector3.forward * 10 , ForceMode.Impulse) ; 
         }
     }
 }

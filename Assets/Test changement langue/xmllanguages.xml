@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<languages>
+
+    <language>
+        <Name>Français</Name>
+        <quitter>Quitter</quitter>
+        <entrer>Entrer</entrer>
+    </language>
+
+    <language>
+        <Name>English</Name>
+        <quitter>Exit</quitter>
+        <entrer>Enter</entrer>
+    </language>
+
+</languages>

@@ -4,19 +4,13 @@ using UnityEngine;
 
 public class ThrowProjectile : MonoBehaviour
 {
-    
-    public GameObject[] projectiles; //Liste de tous les projectiles à remplir dans l'éditeur de jeu
+    private Transform Projectiles; 
     private GameObject projectile; //Projectile utilisé
     public GameObject thrower; //Position de lancer
     public GameObject HUD; 
     private Vector3 throwForce ; //Vecteur force de lancer
     private Vector3 torqueForce = new Vector3(0, -100, 0); //Couple induisant une rotation de la tarte en mode frizbee
- 
-    private enum WeaponSelect
-    {
-        PIE = 0, MUFFIN = 1
-    }
-    private WeaponSelect weaponSelection = 0;
+
     private enum throwingMode{ //Modes de lancer 
         FLAT, FRIZBEE
     }
@@ -25,8 +19,9 @@ public class ThrowProjectile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        projectile = (GameObject)projectiles.GetValue(0);
-
+        //projectile = (GameObject)projectiles.GetValue(0);
+        Projectiles = GameObject.Find("Projectiles").gameObject.transform; 
+        projectile = Projectiles.GetChild(0).gameObject; 
     }
 
     // Update is called once per frame
@@ -41,12 +36,12 @@ public class ThrowProjectile : MonoBehaviour
             projectile.transform.rotation = Quaternion.Euler(0, 0, 0) ; 
             throwForce = Vector3.forward * 20 ; 
         }
-        switch (weaponSelection)
+        switch (projectile.transform.name)
         {
-            case WeaponSelect.PIE: 
+            case "Pie": 
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GameObject projectileInstance = Instantiate((GameObject)projectiles.GetValue((int)weaponSelection), thrower.transform.position, projectile.transform.rotation);
+                    GameObject projectileInstance = Instantiate(projectile, thrower.transform.position, projectile.transform.rotation);
                     projectileInstance.SetActive(true);
                     projectileInstance.GetComponent<Rigidbody>().AddForce(throwForce, ForceMode.Impulse);
                     if (currentThrowingMode == throwingMode.FRIZBEE)
@@ -69,10 +64,10 @@ public class ThrowProjectile : MonoBehaviour
                 }
                 break;
 
-            case WeaponSelect.MUFFIN:
+            case "Muffin":
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GameObject projectileInstance = Instantiate((GameObject)projectiles.GetValue((int)weaponSelection), thrower.transform.position, projectile.transform.rotation);
+                    GameObject projectileInstance = Instantiate(projectile, thrower.transform.position, projectile.transform.rotation);
                     projectileInstance.SetActive(true);
                     projectileInstance.GetComponent<Rigidbody>().AddForce(throwForce, ForceMode.Impulse);
                     if (currentThrowingMode == throwingMode.FRIZBEE)
@@ -97,21 +92,23 @@ public class ThrowProjectile : MonoBehaviour
         }
 
         //Faire rouler la molette pour changer d'arme
-        if(Input.mouseScrollDelta.y != 0){
-            if ((int)weaponSelection >= projectiles.Length-1)
-                weaponSelection = 0;
+        if(Input.mouseScrollDelta.y > 0){
+
+            if (projectile.transform.GetSiblingIndex() >= (Projectiles.childCount-1) )
+                projectile = Projectiles.GetChild(0).gameObject;
             else
-                weaponSelection++;
-            HUD.GetComponent<Log>().AddLogMessage("weaponSelection = " + weaponSelection + " (int) = " + (int)weaponSelection);
+                projectile = Projectiles.GetChild(projectile.transform.GetSiblingIndex() + 1).gameObject;
+            HUD.GetComponent<Log>().AddLogMessage("weaponSelection = " + projectile.name + " index = " + projectile.transform.GetSiblingIndex());
 
         }
+
         if (Input.mouseScrollDelta.y < 0)
         {
-            if ((int)weaponSelection <= 0)
-                weaponSelection = (WeaponSelect)(projectiles.Length - 1);
+            if (projectile.transform.GetSiblingIndex() <= 0)
+                projectile = Projectiles.GetChild((Projectiles.childCount - 1)).gameObject;
             else
-                weaponSelection--;
-            HUD.GetComponent<Log>().AddLogMessage("weaponSelection = " + weaponSelection + " (int) = " + (int)weaponSelection);
+                projectile = Projectiles.GetChild(projectile.transform.GetSiblingIndex() - 1).gameObject;
+            HUD.GetComponent<Log>().AddLogMessage("weaponSelection = " + projectile.name + " index = " + projectile.transform.GetSiblingIndex());
 
         }
 

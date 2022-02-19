@@ -22,8 +22,11 @@ public class Log : MonoBehaviour
     void Update()
     {
         if(timeLeft <= 0){
-            if(LogText.activeSelf)
-                LogText.SetActive(false) ; 
+            if (LogText.activeSelf)
+            {
+                LogText.SetActive(false);
+                LogText.GetComponent<UnityEngine.UI.Text>().text = ""; 
+            }
         }
         else
             timeLeft -= Time.deltaTime ;

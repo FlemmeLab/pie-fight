@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ThrowProjectile : MonoBehaviour
 {
     private Transform Projectiles; 
-    private GameObject projectile; //Projectile utilisé
+    private GameObject projectile; //Projectile utilisÃ©
     public GameObject thrower; //Position de lancer
     public GameObject HUD; 
     private Vector3 throwForce ; //Vecteur force de lancer

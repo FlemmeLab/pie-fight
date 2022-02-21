@@ -3,7 +3,7 @@ using UnityEngine;
 public class ThrowProjectile : MonoBehaviour
 {
     private Transform Projectiles; 
-    private GameObject projectile; //Projectile utilisé
+    public GameObject projectile; //Projectile utilisé
     public GameObject thrower; //Position de lancer
     public GameObject HUD; 
     private Vector3 throwForce ; //Vecteur force de lancer

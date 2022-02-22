@@ -19,6 +19,7 @@ public class HUD3DScript : MonoBehaviour
         Projectiles = GameObject.Find("Projectiles").gameObject.transform;
         foreach(Transform prjctl in Projectiles)
         {
+            //test
             distanceFomCenter = (2*spacing)*( (prjctl.GetSiblingIndex()+1) - Projectiles.childCount + (prjctl.GetSiblingIndex()+1)/2 ) ; 
             GameObject instance = Instantiate(prjctl.gameObject, 
             centerOfHUD + (new Vector3(1,0,0)) * distanceFomCenter, 

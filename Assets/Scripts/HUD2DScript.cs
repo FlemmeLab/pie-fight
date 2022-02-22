@@ -5,7 +5,6 @@ using UnityEngine;
 public class HUD2DScript : MonoBehaviour
 {
     private Transform Crosshairs ;
-    public int CTM = -1 ; 
     void Start()
     {
         Crosshairs = GameObject.Find("Crosshairs").gameObject.transform; 
@@ -22,7 +21,6 @@ public class HUD2DScript : MonoBehaviour
     void onThrowingModeChange(ThrowProjectile t){
         foreach(Transform crsshr in Crosshairs)
         {   
-            CTM = (int)t.currentThrowingMode ; 
             if((int)t.currentThrowingMode == crsshr.GetSiblingIndex())
                 crsshr.gameObject.SetActive(true) ; 
             else

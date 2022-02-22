@@ -32,17 +32,17 @@ public class HUD3DScript : MonoBehaviour
 
         current_proj = transform.Find(Projectiles.GetChild(0).gameObject.transform.name) ;
         current_proj.localScale = itemSize*2 ;
+        //On s'abonne à l'event
+        FindObjectOfType<ThrowProjectile>().projectileChangeEvent += onProjectileChange;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.mouseScrollDelta.y != 0){
-            changeFocus() ;
-        }
+
     }
 
-    void changeFocus(){
+    void onProjectileChange(ThrowProjectile t){
 
             current_proj.localScale = itemSize ;
             current_proj = transform.Find(throwProjectileScript.projectile.name) ;

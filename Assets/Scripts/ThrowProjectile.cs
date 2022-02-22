@@ -9,6 +9,10 @@ public class ThrowProjectile : MonoBehaviour
     private Vector3 throwForce ; //Vecteur force de lancer
     private Vector3 torqueForce = new Vector3(0, -100, 0); //Couple induisant une rotation de la tarte en mode frizbee
 
+    public delegate void projectileChangeDelegate(ThrowProjectile t) ; 
+    
+    //event lié au changement de projectile / arme
+    public event projectileChangeDelegate projectileChangeEvent ;
     private enum throwingMode{ //Modes de lancer 
         FLAT, FRIZBEE
     }
@@ -88,6 +92,7 @@ public class ThrowProjectile : MonoBehaviour
                 }
                 break;
         }
+            
 
         //Faire rouler la molette pour changer d'arme
         if(Input.mouseScrollDelta.y > 0){
@@ -97,7 +102,7 @@ public class ThrowProjectile : MonoBehaviour
             else
                 projectile = Projectiles.GetChild(projectile.transform.GetSiblingIndex() + 1).gameObject;
             HUD.GetComponent<Log>().AddLogMessage("weaponSelection = " + projectile.name + " index = " + projectile.transform.GetSiblingIndex());
-
+            projectileChangeEvent(this) ; 
         }
 
         if (Input.mouseScrollDelta.y < 0)
@@ -107,7 +112,7 @@ public class ThrowProjectile : MonoBehaviour
             else
                 projectile = Projectiles.GetChild(projectile.transform.GetSiblingIndex() - 1).gameObject;
             HUD.GetComponent<Log>().AddLogMessage("weaponSelection = " + projectile.name + " index = " + projectile.transform.GetSiblingIndex());
-
+            projectileChangeEvent(this) ; 
         }
 
 

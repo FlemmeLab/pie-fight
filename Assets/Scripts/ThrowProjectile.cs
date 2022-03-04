@@ -51,12 +51,12 @@ public class ThrowProjectile : MonoBehaviour
             
         if(currentThrowingMode == throwingMode.FRIZBEE){
             projectile.transform.rotation = Quaternion.Euler(-90, 0, 0) ;
-            throwForce = Vector3.forward * 30;
+            throwForce = transform.forward * 30;
 
         } 
         if(currentThrowingMode == throwingMode.FLAT){
             projectile.transform.rotation = Quaternion.Euler(0, 0, 0) ; 
-            throwForce = Vector3.forward * 20 ; 
+            throwForce = transform.forward * 20 ; 
         }
         switch (projectile.transform.name)
         {

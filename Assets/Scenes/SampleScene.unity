@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 2138677392}
-  m_IndirectSpecularColor: {r: 0.28502673, g: 0.37139344, b: 0.49600995, a: 1}
+  m_IndirectSpecularColor: {r: 0.2850269, g: 0.3713935, b: 0.49601045, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -724,7 +724,6 @@ GameObject:
   - component: {fileID: 636424747}
   - component: {fileID: 636424750}
   - component: {fileID: 636424749}
-  - component: {fileID: 636424748}
   m_Layer: 0
   m_Name: PlayerModel
   m_TagString: Untagged
@@ -746,20 +745,6 @@ Transform:
   m_Father: {fileID: 1799383227}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &636424748
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 636424746}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &636424749
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1347,7 +1332,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 23
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1652,6 +1637,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1799383227}
   - component: {fileID: 1799383226}
+  - component: {fileID: 1799383228}
+  - component: {fileID: 1799383229}
+  - component: {fileID: 1799383230}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1694,6 +1682,57 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1799383228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799383225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c63abb9d1df5ae84798cd178a3808753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frontMoveKey: z
+  backMoveKey: s
+  leftMoveKey: q
+  rightMoveKey: d
+  jumpKey: space
+  horizontalLookInput: Mouse X
+  verticalLookInput: Mouse Y
+  translationalVector: {x: 0, y: 0, z: 0}
+  rotationalVector: {x: 0, y: 0, z: 0}
+  stuff: 0
+--- !u!54 &1799383229
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799383225}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
+--- !u!65 &1799383230
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799383225}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: -0.5, z: 0}
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

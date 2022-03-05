@@ -7,7 +7,7 @@ public class ThrowProjectile : MonoBehaviour
     public GameObject thrower; //Position de lancer
     public GameObject HUD; 
     private Vector3 throwForce ; //Vecteur force de lancer
-    private Vector3 torqueForce = new Vector3(0, -100, 0); //Couple induisant une rotation de la tarte en mode frizbee
+    private float torque = -100; //Couple induisant une rotation de la tarte en mode frizbee
     
     //event lié au changement de mode de tir
     public delegate void throwingModeChangeDelegate(ThrowProjectile t) ; 
@@ -50,24 +50,26 @@ public class ThrowProjectile : MonoBehaviour
                 }
             
         if(currentThrowingMode == throwingMode.FRIZBEE){
-            projectile.transform.rotation = Quaternion.Euler(-90, 0, 0) ;
-            throwForce = transform.forward * 30;
+            throwForce = thrower.transform.forward * 30;
 
         } 
         if(currentThrowingMode == throwingMode.FLAT){
-            projectile.transform.rotation = Quaternion.Euler(0, 0, 0) ; 
-            throwForce = transform.forward * 20 ; 
+            throwForce = thrower.transform.forward * 20 ; 
         }
         switch (projectile.transform.name)
         {
             case "Pie": 
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GameObject projectileInstance = Instantiate(projectile, thrower.transform.position, projectile.transform.rotation);
+                    GameObject projectileInstance = Instantiate(projectile, thrower.transform.position, thrower.transform.rotation);
                     projectileInstance.SetActive(true);
                     projectileInstance.GetComponent<Rigidbody>().AddForce(throwForce, ForceMode.Impulse);
                     if (currentThrowingMode == throwingMode.FRIZBEE)
+                    {
+                        projectileInstance.transform.Rotate(new Vector3(-90,0,0));
+                        Vector3 torqueForce = projectileInstance.transform.transform.forward * torque; 
                         projectileInstance.GetComponent<Rigidbody>().AddTorque(torqueForce);
+                    }
                 }
 
                
@@ -76,11 +78,9 @@ public class ThrowProjectile : MonoBehaviour
             case "Muffin":
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GameObject projectileInstance = Instantiate(projectile, thrower.transform.position, projectile.transform.rotation);
+                    GameObject projectileInstance = Instantiate(projectile, thrower.transform.position, thrower.transform.rotation);
                     projectileInstance.SetActive(true);
                     projectileInstance.GetComponent<Rigidbody>().AddForce(throwForce, ForceMode.Impulse);
-                    if (currentThrowingMode == throwingMode.FRIZBEE)
-                        projectileInstance.GetComponent<Rigidbody>().AddTorque(torqueForce);
                 }
 
                 break;

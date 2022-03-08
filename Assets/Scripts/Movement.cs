@@ -32,7 +32,7 @@ public class Movement : MonoBehaviour
     //Force de saut 
     private float jumpForce = 5f;
 
-    private float jumpInterval = 0.1f;
+    private float jumpInterval = 0.5f;
     private float jumpTimeRemaining = 0f;
 
 
@@ -63,6 +63,8 @@ public class Movement : MonoBehaviour
 
     //Ground
     private Transform groundTrans;
+    private float GroundedRadius = 0.1f;
+    public LayerMask GroundLayers; 
 
     void Start()
     {
@@ -121,12 +123,20 @@ public class Movement : MonoBehaviour
                 return direction_left;
             case 6:
                 return direction_up_left;
+            case 7:
+                return direction_up;
             case 8:
                 return direction_down;
             case 9:
                 return direction_down_right;
+            case 11:
+                return direction_right;
             case 12:
                 return direction_down_left;
+            case 13:
+                return direction_down;
+            case 14:
+                return direction_left;
             default:
                 return Vector3.zero; 
         }
@@ -135,7 +145,7 @@ public class Movement : MonoBehaviour
     private void onMove(Movement t)
     {
         Debug.Log(jumpTimeRemaining);
-        if ( ( groundTrans.position.y >= (transform.position.y - transform.localScale.y) ) && (jumpTimeRemaining == 0f) && Input.GetKey(jumpKey)) {
+        if ( Physics.CheckSphere( transform.position - transform.localScale, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore) && (jumpTimeRemaining == 0f) && Input.GetKeyDown(jumpKey)) {
             transform.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
             jumpTimeRemaining = jumpInterval; 
         }

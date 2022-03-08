@@ -1155,15 +1155,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1196725971}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.08741657, y: 0, z: 0, w: 0.99617183}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1406702308}
   - {fileID: 1394524878}
+  - {fileID: 1406702308}
   m_Father: {fileID: 1799383227}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -10.03, y: 0, z: 0}
 --- !u!1 &1213045325
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,11 +1293,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1394524877}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5999999, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1196725972}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1394524879
 MonoBehaviour:
@@ -1400,11 +1400,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1406702307}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 2, z: 0}
+  m_LocalPosition: {x: 0.3, y: 0.39999998, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1196725972}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1510194289 stripped
 GameObject:
@@ -1670,8 +1670,8 @@ GameObject:
   - component: {fileID: 1799383227}
   - component: {fileID: 1799383226}
   - component: {fileID: 1799383228}
-  - component: {fileID: 1799383229}
   - component: {fileID: 1799383230}
+  - component: {fileID: 1799383229}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1725,6 +1725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c63abb9d1df5ae84798cd178a3808753, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Sensitivity: 5
   frontMoveKey: z
   backMoveKey: s
   leftMoveKey: q
@@ -1732,8 +1733,8 @@ MonoBehaviour:
   jumpKey: space
   horizontalLookInput: Mouse X
   verticalLookInput: Mouse Y
+  playerSpeed: 5
   translationalVector: {x: 0, y: 0, z: 0}
-  rotationalVector: {x: 0, y: 0, z: 0}
 --- !u!54 &1799383229
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1748,7 +1749,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!65 &1799383230
 BoxCollider:

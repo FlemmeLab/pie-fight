@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+
+    // https://medium.com/ironequal/unity-character-controller-vs-rigidbody-a1e243591483
+
     // Configurable par le joueur : 
 
     // Sensitivité de la souris
@@ -27,8 +30,8 @@ public class Movement : MonoBehaviour
     public event MoveDelegate moveEvent;
 
     //Vitesse du joueur 
-    public float playerSpeed = 5f; 
-
+    private float playerSpeed = 10f; 
+    
     //Force de saut 
     private float jumpForce = 5f;
 
@@ -50,6 +53,9 @@ public class Movement : MonoBehaviour
     private static Vector3 direction_up_right = new Vector3(sin_pi_4, 0, sin_pi_4);
     private static Vector3 direction_down_left = new Vector3(-sin_pi_4, 0, -sin_pi_4);
     private static Vector3 direction_down_right = new Vector3(sin_pi_4, 0, -sin_pi_4);
+
+    private static float bumperRadius = 0.5f; 
+    public LayerMask bumpLayers;
 
     //Objet comprenant la camera et le lanceur de projectile qui nécessitent d'être orientés dans la même direction
     private Transform aimTrans;
@@ -144,13 +150,19 @@ public class Movement : MonoBehaviour
 
     private void onMove(Movement t)
     {
-        Debug.Log(jumpTimeRemaining);
         if ( Physics.CheckSphere( transform.position - transform.localScale, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore) && (jumpTimeRemaining == 0f) && Input.GetKeyDown(jumpKey)) {
             transform.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
             jumpTimeRemaining = jumpInterval; 
         }
-        int movement_code = IoB(Input.GetKey(rightMoveKey)) + 2 * IoB(Input.GetKey(frontMoveKey)) + 4 * IoB(Input.GetKey(leftMoveKey)) + 8 * IoB(Input.GetKey(backMoveKey));         
+
+        int movement_code = IoB(Input.GetKey(rightMoveKey)) * IoB(!Physics.CheckSphere(transform.position + transform.right * transform.localScale.x / 2, bumperRadius, bumpLayers, QueryTriggerInteraction.Ignore))
+                            + 2 * IoB(Input.GetKey(frontMoveKey)) * IoB(!Physics.CheckSphere(transform.position + transform.forward*transform.localScale.z / 2 , bumperRadius, bumpLayers, QueryTriggerInteraction.Ignore))
+                            + 4 * IoB(Input.GetKey(leftMoveKey)) * IoB(!Physics.CheckSphere(transform.position - transform.right * transform.localScale.x / 2 , bumperRadius, bumpLayers, QueryTriggerInteraction.Ignore))
+                            + 8 * IoB(Input.GetKey(backMoveKey)) * IoB(!Physics.CheckSphere(transform.position - transform.forward * transform.localScale.z / 2 , bumperRadius, bumpLayers, QueryTriggerInteraction.Ignore));   
+        
         transform.Translate(DirectionInput(movement_code) * playerSpeed * Time.deltaTime);
+        //transform.GetComponent<Rigidbody>().MovePosition(transform.position + DirectionInput(movement_code) * playerSpeed * Time.deltaTime);
+
         transform.Rotate(new Vector3(0, Input.GetAxis(horizontalLookInput) * Sensitivity, 0));
 
         rotX -= Input.GetAxis(verticalLookInput) * Sensitivity;

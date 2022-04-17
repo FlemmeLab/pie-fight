@@ -25,37 +25,18 @@ public class Movement : MonoBehaviour
 
     //-----------------
 
-    //event lié à la mise à jour de la position du joueur 
-    public delegate void MoveDelegate(Movement t);
-    public event MoveDelegate moveEvent;
-
     //Vitesse du joueur 
-    private float playerSpeed = 10f; 
-    
+    private float playerSpeed = 10f;
+
+    //Acceleration
+    private float playerAcceleration = 500f; 
+
     //Force de saut 
     private float jumpForce = 5f;
 
+    //Timer entre les sauts
     private float jumpInterval = 0.5f;
     private float jumpTimeRemaining = 0f;
-
-
-    //Vecteur de déplacement qui correspond à l'appuis sur les touches de déplacement (ex : (-1,0,1) pour q,z)
-    //Je n'aime pas cette methode (méthode arithmétique?)
-
-    public Vector3 translationalVector = Vector3.zero;
-
-    private static float sin_pi_4 = 0.70710678118f;
-    private static Vector3 direction_left = new Vector3(-1, 0, 0);
-    private static Vector3 direction_up = new Vector3(0, 0, 1);
-    private static Vector3 direction_right = new Vector3(1, 0, 0);
-    private static Vector3 direction_down = new Vector3(0, 0, -1);
-    private static Vector3 direction_up_left = new Vector3(-sin_pi_4, 0, sin_pi_4); 
-    private static Vector3 direction_up_right = new Vector3(sin_pi_4, 0, sin_pi_4);
-    private static Vector3 direction_down_left = new Vector3(-sin_pi_4, 0, -sin_pi_4);
-    private static Vector3 direction_down_right = new Vector3(sin_pi_4, 0, -sin_pi_4);
-
-    private static float bumperRadius = 0.5f; 
-    public LayerMask bumpLayers;
 
     //Objet comprenant la camera et le lanceur de projectile qui nécessitent d'être orientés dans la même direction
     private Transform aimTrans;
@@ -68,42 +49,51 @@ public class Movement : MonoBehaviour
     private float topClamp = 90f;
 
     //Ground
-    private Transform groundTrans;
     private float GroundedRadius = 0.1f;
-    public LayerMask GroundLayers; 
+    public LayerMask EnvironnementLayer;
+
+    //Rigidbody
+    private Rigidbody PlayerRigidbody; 
 
     void Start()
     {
         aimTrans = GameObject.Find("Aim").transform;
-        groundTrans = GameObject.Find("Ground").transform;
-        //On s'abonne à l'event
-        moveEvent += onMove ;
 
-        Cursor.lockState = CursorLockMode.Confined;
-
+        Cursor.lockState = CursorLockMode.Locked;
+        PlayerRigidbody = transform.GetComponent<Rigidbody>(); 
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.anyKey || Input.GetAxis(verticalLookInput) != 0 || Input.GetAxis(horizontalLookInput) != 0)
+        Debug.Log(Physics.CheckBox(transform.position - new Vector3(0, GroundedRadius, 0), transform.localScale - new Vector3(0.01f, 0, 0.01f), Quaternion.identity, EnvironnementLayer) && (jumpTimeRemaining <= 0f) && Input.GetKeyDown(jumpKey));
+        //On verifie la presence du sol avant de sauter
+        if (Physics.CheckBox(transform.position - new Vector3(0, GroundedRadius, 0), transform.localScale - new Vector3(0.01f,0.00f,0.01f), Quaternion.identity, EnvironnementLayer) && (jumpTimeRemaining <= 0f) && Input.GetKeyDown(jumpKey))
         {
-            if (moveEvent != null)
-                moveEvent(this);
+            transform.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+            jumpTimeRemaining = jumpInterval;
         }
+
+        transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * Sensitivity, 0));
+        rotX -= Input.GetAxis("Mouse Y") * Sensitivity;
+
+        // clamp our pitch rotation
+        rotX = ClampAngle(rotX, bottomClamp, topClamp);
+
+        // On tourne la visee (cam + thrower) autour de l'axe x 
+        aimTrans.transform.localRotation = Quaternion.Euler(rotX, 0.0f, 0.0f);
+
+        //Seul moyen d'avoir un mvmt propre et maitrise ( "velocite <= vitesse du joueur" )
+        PlayerRigidbody.velocity = Vector3.ClampMagnitude(Input.GetAxis("Vertical") * transform.forward * playerSpeed
+                                                   + Input.GetAxis("Horizontal") * transform.right * playerSpeed, playerSpeed)
+                             + new Vector3(0, PlayerRigidbody.velocity.y, 0);
+
+        //gestion du temps entre les sauts
         if (jumpTimeRemaining > 0)
             jumpTimeRemaining -= Time.deltaTime;
         if (jumpTimeRemaining < 0)
             jumpTimeRemaining = 0;
 
-    }
-
-
-
-    //Int of bool
-    private int IoB(bool B)
-    {
-        return B ? 1 : 0 ;
     }
 
     // fonction qui retourne lfAngle si lfMax > lfAngle > lfMin, lfMin si lfAngle <= lfMin ou lfMax si lfAngle >= lfMax
@@ -114,63 +104,5 @@ public class Movement : MonoBehaviour
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 
-    private Vector3 DirectionInput(int input)
-    {
-        Debug.Log("Input: " + input); 
-        switch (input)
-        {
-            case 1:
-                return direction_right;
-            case 2:
-                return direction_up;
-            case 3:
-                return direction_up_right;
-            case 4:
-                return direction_left;
-            case 6:
-                return direction_up_left;
-            case 7:
-                return direction_up;
-            case 8:
-                return direction_down;
-            case 9:
-                return direction_down_right;
-            case 11:
-                return direction_right;
-            case 12:
-                return direction_down_left;
-            case 13:
-                return direction_down;
-            case 14:
-                return direction_left;
-            default:
-                return Vector3.zero; 
-        }
-    }
 
-    private void onMove(Movement t)
-    {
-        if ( Physics.CheckSphere( transform.position - transform.localScale, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore) && (jumpTimeRemaining == 0f) && Input.GetKeyDown(jumpKey)) {
-            transform.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
-            jumpTimeRemaining = jumpInterval; 
-        }
-
-        int movement_code = IoB(Input.GetKey(rightMoveKey)) * IoB(!Physics.CheckSphere(transform.position + transform.right * transform.localScale.x / 2, bumperRadius, bumpLayers, QueryTriggerInteraction.Ignore))
-                            + 2 * IoB(Input.GetKey(frontMoveKey)) * IoB(!Physics.CheckSphere(transform.position + transform.forward*transform.localScale.z / 2 , bumperRadius, bumpLayers, QueryTriggerInteraction.Ignore))
-                            + 4 * IoB(Input.GetKey(leftMoveKey)) * IoB(!Physics.CheckSphere(transform.position - transform.right * transform.localScale.x / 2 , bumperRadius, bumpLayers, QueryTriggerInteraction.Ignore))
-                            + 8 * IoB(Input.GetKey(backMoveKey)) * IoB(!Physics.CheckSphere(transform.position - transform.forward * transform.localScale.z / 2 , bumperRadius, bumpLayers, QueryTriggerInteraction.Ignore));   
-        
-        transform.Translate(DirectionInput(movement_code) * playerSpeed * Time.deltaTime);
-        //transform.GetComponent<Rigidbody>().MovePosition(transform.position + DirectionInput(movement_code) * playerSpeed * Time.deltaTime);
-
-        transform.Rotate(new Vector3(0, Input.GetAxis(horizontalLookInput) * Sensitivity, 0));
-
-        rotX -= Input.GetAxis(verticalLookInput) * Sensitivity;
-
-        // clamp our pitch rotation
-        rotX = ClampAngle(rotX, bottomClamp, topClamp);
-
-        // On tourne la visee (cam + thrower) autour de l'axe x 
-        aimTrans.transform.localRotation = Quaternion.Euler(rotX, 0.0f, 0.0f);
-    }
 }

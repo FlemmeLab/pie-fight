@@ -6,18 +6,11 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
 
-    // https://medium.com/ironequal/unity-character-controller-vs-rigidbody-a1e243591483
-
-    // Configurable par le joueur : 
 
     // Sensitivité de la souris
     public float Sensitivity = 5f;
 
     //Configurable depuis un menu?
-    public string frontMoveKey = "z";
-    public string backMoveKey = "s";
-    public string leftMoveKey = "q";
-    public string rightMoveKey = "d";
     public string jumpKey = "space";
 
     public string horizontalLookInput = "Mouse X";
@@ -27,9 +20,6 @@ public class Movement : MonoBehaviour
 
     //Vitesse du joueur 
     private float playerSpeed = 10f;
-
-    //Acceleration
-    private float playerAcceleration = 500f; 
 
     //Force de saut 
     private float jumpForce = 5f;
@@ -51,6 +41,7 @@ public class Movement : MonoBehaviour
     //Ground
     private float GroundedRadius = 0.1f;
     public LayerMask EnvironnementLayer;
+    public bool isNotGrounded;
 
     //Rigidbody
     private Rigidbody PlayerRigidbody; 
@@ -66,12 +57,15 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(Physics.CheckBox(transform.position - new Vector3(0, GroundedRadius, 0), transform.localScale - new Vector3(0.01f, 0, 0.01f), Quaternion.identity, EnvironnementLayer) && (jumpTimeRemaining <= 0f) && Input.GetKeyDown(jumpKey));
-        //On verifie la presence du sol avant de sauter
-        if (Physics.CheckBox(transform.position - new Vector3(0, GroundedRadius, 0), transform.localScale - new Vector3(0.01f,0.00f,0.01f), Quaternion.identity, EnvironnementLayer) && (jumpTimeRemaining <= 0f) && Input.GetKeyDown(jumpKey))
+         //On verifie la presence du sol avant de sauter
+        if (Physics.CheckBox(transform.position - new Vector3(0, GroundedRadius, 0), transform.localScale - new Vector3(0.01f,0.00f,0.01f), Quaternion.identity, EnvironnementLayer) && (jumpTimeRemaining <= 0f) && (Input.GetAxis("Jump") != 0))
         {
             transform.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+            isNotGrounded = false; 
             jumpTimeRemaining = jumpInterval;
+        } else
+        {
+            isNotGrounded = true; 
         }
 
         transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * Sensitivity, 0));
@@ -103,6 +97,15 @@ public class Movement : MonoBehaviour
         if (lfAngle > 360f) lfAngle -= 360f;
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
-
+/*
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(isNotGrounded+" Collido"); 
+        GameObject collided = collision.gameObject;
+        if(collided.layer == 6 && isNotGrounded)
+            Debug.Log("Mega Collido");
+       
+    }
+*/
 
 }

@@ -32,7 +32,7 @@ public class ThrowProjectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         if (Input.GetMouseButtonDown(1))
+         if (Input.GetButtonDown("Fire2"))
                 {
 
                     if (currentThrowingMode == throwingMode.FLAT)
@@ -59,7 +59,7 @@ public class ThrowProjectile : MonoBehaviour
         switch (projectile.transform.name)
         {
             case "Pie": 
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetButtonDown("Fire1"))
                 {
                     GameObject projectileInstance = Instantiate(projectile, thrower.transform.position, thrower.transform.rotation);
                     projectileInstance.SetActive(true);
@@ -76,7 +76,7 @@ public class ThrowProjectile : MonoBehaviour
                 break;
 
             case "Muffin":
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetButtonDown("Fire1"))
                 {
                     GameObject projectileInstance = Instantiate(projectile, thrower.transform.position, thrower.transform.rotation);
                     projectileInstance.SetActive(true);

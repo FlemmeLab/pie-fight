@@ -56,6 +56,7 @@ public class HUD3DScript : MonoBehaviour
             updateScale = (prev_proj.localScale.x != itemSize) || (current_proj.localScale.x != itemSize*2) ; 
         }
       
+
     }
 
     void onProjectileChange(ThrowProjectile t){

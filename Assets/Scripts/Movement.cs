@@ -9,12 +9,13 @@ public class Movement : MonoBehaviour
     public float moveSpeed              = 10.0f;
     private float movementMultiplier    = 10.0f;
     public float groundMultiplier       = 10.0f;
-    public float airMultiplier          = 00.1f;
+    public float airMultiplierUp        = 01.0f;
+    public float airMultiplierDown      = 00.5f;
 
     [Header("Drag")]
     public float rbDrag             = 06.0f;
     public float groundDrag         = 06.0f;
-    public float airDrag            = 00.5f;
+    public float airDrag            = 10.0f;
 
     [Header("Keybinds")]
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
@@ -66,7 +67,18 @@ public class Movement : MonoBehaviour
         else
         {
             rbDrag = airDrag;
-            movementMultiplier = airMultiplier;
+
+            if (rb.velocity.y < 0)
+            {
+                movementMultiplier = airMultiplierUp;
+                Physics.gravity = new Vector3(0, -20.0F, 0);
+            }
+            else
+            {
+                movementMultiplier = airMultiplierDown;
+                Physics.gravity = new Vector3(0, -09.8F, 0);
+            }
+            
         }
 
         rb.drag = rbDrag;

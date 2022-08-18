@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class Rotate : MonoBehaviour
 {
-    public float rotationSpeed = 500.0f; //Rotation speed (deg/s)
+    public float rotationSpeed; //Rotation speed (deg/s)
+    private float deltaAng;
     void Start()
     {
+        deltaAng = rotationSpeed * Time.deltaTime; 
     }
 
     // Update is called once per frame
     void Update()
     {
-        gameObject.transform.Rotate(0,rotationSpeed * Time.deltaTime,0); 
+        gameObject.transform.Rotate(0,deltaAng,0); 
     }
 }

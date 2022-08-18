@@ -5,97 +5,107 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    [Header("Movement")]
-    public float moveSpeed              = 10.0f;
-    private float movementMultiplier    = 10.0f;
-    public float groundMultiplier       = 10.0f;
-    public float airMultiplierUp        = 01.0f;
-    public float airMultiplierDown      = 00.5f;
 
-    [Header("Drag")]
-    public float rbDrag             = 06.0f;
-    public float groundDrag         = 06.0f;
-    public float airDrag            = 10.0f;
 
-    [Header("Keybinds")]
-    [SerializeField] KeyCode jumpKey = KeyCode.Space;
-    float horizontalMovement;
-    float verticalMovement;
+    // Sensitivité de la souris
+    public float Sensitivity = 5f;
 
-    [Header("Jumping")]
-    public float jumpForce          = 08.0f;
+    //Configurable depuis un menu?
+    public string jumpKey = "space";
 
-    float playerHeight = 2.0f;
-    private bool isGrounded         = false;
+    public string horizontalLookInput = "Mouse X";
+    public string verticalLookInput = "Mouse Y";
 
-    Vector3 moveDirection;
-    Rigidbody rb;
-    private void Start()
+    //-----------------
+
+    //Vitesse du joueur 
+    private float playerSpeed = 10f;
+
+    //Force de saut 
+    private float jumpForce = 5f;
+
+    //Timer entre les sauts
+    private float jumpInterval = 0.5f;
+    private float jumpTimeRemaining = 0f;
+
+    //Objet comprenant la camera et le lanceur de projectile qui nécessitent d'être orientés dans la même direction
+    private Transform aimTrans;
+    
+    //Rotation selon l'axe x du joueur
+    private float rotX;
+
+    //Limites supérieures et inférieure de la vue verticale
+    private float bottomClamp = -90f;
+    private float topClamp = 90f;
+
+    //Ground
+    private float GroundedRadius = 0.1f;
+    public LayerMask EnvironnementLayer;
+    public bool isNotGrounded;
+
+    //Rigidbody
+    private Rigidbody PlayerRigidbody; 
+
+    void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
+        aimTrans = GameObject.Find("Aim").transform;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        PlayerRigidbody = transform.GetComponent<Rigidbody>(); 
     }
 
-    private void Update()
+    // Update is called once per frame
+    void Update()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
-        MyInput();
-        ControlDrag();
-
-        if(Input.GetKeyDown(jumpKey) && isGrounded)
+         //On verifie la presence du sol avant de sauter
+        if (Physics.CheckBox(transform.position - new Vector3(0, GroundedRadius, 0), transform.localScale - new Vector3(0.01f,0.00f,0.01f), Quaternion.identity, EnvironnementLayer) && (jumpTimeRemaining <= 0f) && (Input.GetAxis("Jump") != 0))
         {
-            Jump();
-        }
-    }
-
-    void MyInput()
-    {
-        horizontalMovement  = Input.GetAxisRaw("Horizontal");
-        verticalMovement    = Input.GetAxisRaw("Vertical");
-
-        moveDirection = transform.forward * verticalMovement + transform.right * horizontalMovement;
-    }
-
-    void ControlDrag()
-    {
-        
-        if (isGrounded)
+            transform.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+            isNotGrounded = false; 
+            jumpTimeRemaining = jumpInterval;
+        } else
         {
-            rbDrag = groundDrag;
-            movementMultiplier = groundMultiplier;
-        }
-        else
-        {
-            rbDrag = airDrag;
-
-            if (rb.velocity.y < 0)
-            {
-                movementMultiplier = airMultiplierUp;
-                Physics.gravity = new Vector3(0, -20.0F, 0);
-            }
-            else
-            {
-                movementMultiplier = airMultiplierDown;
-                Physics.gravity = new Vector3(0, -09.8F, 0);
-            }
-            
+            isNotGrounded = true; 
         }
 
-        rb.drag = rbDrag;
+        transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * Sensitivity, 0));
+        rotX -= Input.GetAxis("Mouse Y") * Sensitivity;
+
+        // clamp our pitch rotation
+        rotX = ClampAngle(rotX, bottomClamp, topClamp);
+
+        // On tourne la visee (cam + thrower) autour de l'axe x 
+        aimTrans.transform.localRotation = Quaternion.Euler(rotX, 0.0f, 0.0f);
+
+        //Seul moyen d'avoir un mvmt propre et maitrise ( "velocite <= vitesse du joueur" )
+        PlayerRigidbody.velocity = Vector3.ClampMagnitude(Input.GetAxis("Vertical") * transform.forward * playerSpeed
+                                                   + Input.GetAxis("Horizontal") * transform.right * playerSpeed, playerSpeed)
+                             + new Vector3(0, PlayerRigidbody.velocity.y, 0);
+
+        //gestion du temps entre les sauts
+        if (jumpTimeRemaining > 0)
+            jumpTimeRemaining -= Time.deltaTime;
+        if (jumpTimeRemaining < 0)
+            jumpTimeRemaining = 0;
+
     }
 
-    private void FixedUpdate()
+    // fonction qui retourne lfAngle si lfMax > lfAngle > lfMin, lfMin si lfAngle <= lfMin ou lfMax si lfAngle >= lfMax
+    private float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
-        MovePlayer();
+        if (lfAngle < -360f) lfAngle += 360f;
+        if (lfAngle > 360f) lfAngle -= 360f;
+        return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
-
-    void MovePlayer()
+/*
+    private void OnCollisionEnter(Collision collision)
     {
-        rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+        Debug.Log(isNotGrounded+" Collido"); 
+        GameObject collided = collision.gameObject;
+        if(collided.layer == 6 && isNotGrounded)
+            Debug.Log("Mega Collido");
+       
     }
-    void Jump()
-    {
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-    }
+*/
 
 }
